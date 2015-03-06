@@ -1,0 +1,44 @@
+<?xml version='1.0'?>
+<!DOCTYPE hibernate-configuration PUBLIC 
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN" 
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<mapping class="responde.ai.model.web.InternalPage" />
+
+		<mapping class="responde.ai.model.audit.AuditEntry" />
+
+		<mapping class="responde.ai.model.question.Alternative" />
+		<mapping class="responde.ai.model.question.Answer" />
+		<mapping class="responde.ai.model.question.Question" />
+
+		<mapping class="responde.ai.model.game.GameSession" />
+		<mapping class="responde.ai.model.game.GameSessionEvent" />
+
+		<mapping class="responde.ai.model.quiz.Quiz" />
+		<!-- mapping class="responde.ai.model.quiz.QuizTemplate" / -->
+
+		<mapping class="responde.ai.model.user.Player" />
+		<mapping class="responde.ai.model.user.Role" />
+		<mapping class="responde.ai.model.user.User" />
+		<mapping class="responde.ai.model.user.tfa.TFASecret" />
+		<mapping class="responde.ai.model.user.tfa.TwoFactorAuthentication" />
+
+		<mapping class="responde.ai.model.extra.Tag" />
+		<mapping class="responde.ai.model.extra.VisualStyles" />
+		<mapping class="responde.ai.model.extra.Configuration" />
+		
+		<mapping class="responde.ai.model.billing.BillingEvent" />
+		<mapping class="responde.ai.model.billing.BillingHistory" />
+		<mapping class="responde.ai.model.billing.BillingTransaction" />
+		
+		
+		
+		<class-cache usage="read-write" class="responde.ai.model.web.InternalPage" />
+		<class-cache usage="read-write" class="responde.ai.model.user.Role" />
+		<class-cache usage="read-write" class="responde.ai.model.extra.Configuration" />
+		<class-cache usage="read-write" class="responde.ai.model.extra.VisualStyles" />
+		<class-cache usage="read-write" class="responde.ai.model.extra.Tag" />
+	</session-factory>
+</hibernate-configuration>

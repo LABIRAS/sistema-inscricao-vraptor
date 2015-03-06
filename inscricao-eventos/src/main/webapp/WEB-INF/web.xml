@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="Responde.Ai-Admin" version="3.0">
+	<display-name>responde.Ai</display-name>
+	<description>Responde.Ai Admin</description>
+	<resource-ref>
+		<description>Database Connection provided by Apache Tomcat</description>
+		<res-ref-name>jdbc/respondeai</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<context-param>
+		<param-name>br.com.caelum.vraptor.encoding</param-name>
+		<param-value>UTF-8</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+		<param-value>messages</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+	</listener>
+	<filter>
+		<filter-name>monitoring</filter-name>
+		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+		<init-param>
+			<param-name>log</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>monitoring-path</param-name>
+			<param-value>/melody</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>monitoring</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<listener>
+		<listener-class>net.bull.javamelody.SessionListener</listener-class>
+	</listener>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>Monitoramento do Responde.Ai</realm-name>
+	</login-config>
+	<security-role>
+		<role-name>melody</role-name>
+	</security-role>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Monitoramento do Responde.Ai</web-resource-name>
+			<url-pattern>/melody</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>melody</role-name>
+		</auth-constraint>
+	</security-constraint>
+</web-app>
