@@ -35,19 +35,19 @@ public class Inscrito implements Serializable, JSONable {
 	@Column(nullable = false)
 	private boolean estudante;
 	
-	@Column(nullable = false)
+	@Column(length = 256)
 	private String nivelGraduacao;
 	
-	@Column(nullable = false)
+	@Column(length = 256)
 	private String curso;
 	
-	@Column(nullable = false)
+	@Column(length = 256)
 	private String ultimaInstituicao;
 	
 	@Column(nullable = false)
 	private boolean profissional;
 	
-	@Column(nullable = false)
+	@Column(length = 256)
 	private String empresa;
 	
 	@Column(nullable = false)
@@ -104,7 +104,7 @@ public class Inscrito implements Serializable, JSONable {
 	}
 
 	public void setCpf(final String cpf) {
-		this.cpf = cpf;
+		this.cpf = cpf == null ? null : cpf.trim().replaceAll("\\D+", "");
 	}
 
 	public int getIdade() {
