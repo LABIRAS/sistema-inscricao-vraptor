@@ -32,12 +32,15 @@ public class User implements Serializable, JSONable {
 	@Column(nullable = false, length = 64)
 	private String role;
 	
+	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateCreated;
 	
+	@Column(nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastUpdated;
 	
+	@Column(nullable = true)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastLogin;
 
@@ -110,7 +113,6 @@ public class User implements Serializable, JSONable {
 	}
 
 	public Map<String, Object> json() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

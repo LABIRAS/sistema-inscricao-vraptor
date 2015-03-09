@@ -50,10 +50,10 @@ public class Inscrito implements Serializable, JSONable {
 	@Column(length = 256)
 	private String empresa;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 128)
 	private String cidade;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 6)
 	private String uf;
 	
 	@Column(nullable = false)

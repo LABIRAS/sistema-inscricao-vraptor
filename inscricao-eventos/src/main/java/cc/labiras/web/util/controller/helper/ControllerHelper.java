@@ -55,14 +55,8 @@ public abstract class ControllerHelper {
 		this.config = config;
 		
 		if (result != null) {
-			final String ctxPath = request.getContextPath().endsWith("/") ? request.getContextPath() : (request.getContextPath() + "/");
-			result.include("ctxPath", ctxPath);
 			result.include("CURRENT_USER", CurrentUser.get());
 			result.include("CURRENT_USER_IS_ADMIN", CurrentUser.isRole("ADMIN"));
-			
-			if (config != null) {
-				result.include("cdnPath", config.get("cdnPath", ctxPath));
-			}
 		}
 	}
 	

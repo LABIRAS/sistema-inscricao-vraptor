@@ -22,64 +22,87 @@ import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
+import cc.labiras.web.model.Etapa;
 import cc.labiras.web.model.Inscrito;
 import cc.labiras.web.util.StringUtils;
 import cc.labiras.web.util.controller.helper.ControllerHelper;
+import cc.labiras.web.util.sync.ControladorCadastrosSincronizados;
 import cc.labiras.web.util.vraptor.Internationalization;
 import cc.labiras.web.util.vraptor.component.Config;
 
 @Controller
 public class InscricaoController extends ControllerHelper {
 	private final Validator validator;
+	private final ControladorCadastrosSincronizados controladorInscricoes;
 	
 	/** CDI @deprecated */ @Deprecated
-	InscricaoController() { this(null, null, null, null, null, null, null); }
+	InscricaoController() { this(null, null, null, null, null, null, null, null); }
 	
 	@Inject
-	public InscricaoController(final Result result, final HttpServletRequest request, final HttpServletResponse response, final Session session, final Internationalization i18n, final Config config, final Validator validator) {
+	public InscricaoController(final Result result, final HttpServletRequest request, final HttpServletResponse response, final Session session, final Internationalization i18n, final Config config, final Validator validator, final ControladorCadastrosSincronizados controladorInscricoes) {
 		super(result, request, response, session, i18n, config);
 		this.validator = validator;
+		this.controladorInscricoes = controladorInscricoes;
 	}
 	
 	@Path("/")
 	public void index() { }
 	
 	@Post
-	@Path("/cadastrar")
+	@Path("/api/cadastrar")
 	public void cadastrar(final Inscrito i) {
-		if (i != null) {
-			i.setDataInscricao(new Date());
-			i.setPago(config.getBoolean("evento.gratis", true));
-			if (i.isPago()) { i.setDataPagamento(new Date()); }
-			
-			validateInscrito(i);
-			
-			if (!validator.hasErrors()) {
-				final Transaction t = session.beginTransaction();
-				
-				try {
-					session.save(i);
-					t.commit();
+		final Etapa etapa = etapaAtual();
+		
+		if (etapa != null) {
+			if (i != null) {
+				if (controladorInscricoes.etapa(etapa).adicionarInscrito()) {
+					i.setDataInscricao(new Date());
+					i.setPago(etapa.getPreco() <= 0);
+					if (i.isPago()) { i.setDataPagamento(new Date()); }
 					
-					jsonResponseSuccess();
-				} catch (final Exception e) {
-					e.printStackTrace();
-					sendErrors("Erro ao salvar informações no banco de dados");
+					validateInscrito(i);
 					
-					try {
-						t.rollback();
-					} catch (final Exception e2) {
-						sendErrors("Erro ao salvar informações no banco de dados");
+					if (!validator.hasErrors()) {
+						final Transaction t = session.beginTransaction();
+						
+						try {
+							session.save(i);
+							t.commit();
+							
+							jsonResponseSuccess();
+						} catch (final Exception e) {
+							e.printStackTrace();
+							controladorInscricoes.etapa(etapa).removerInscrito();
+							
+							try {
+								t.rollback();
+							} catch (final Exception e2) {
+								sendErrors("Erro ao salvar informações no banco de dados!!");
+								return;
+							}
+							
+							sendErrors("Erro ao salvar informações no banco de dados");
+						}
 					}
+					else {
+						sendErrors();
+					}
+				}
+				else {
+					sendErrors("Infelizmente não existem mais vagas disponíveis no momento :(");
 				}
 			}
 			else {
-				sendErrors();
+				result.use(Results.http()).sendError(HttpServletResponse.SC_BAD_REQUEST, "Por favor, especifique os parâmetros necessários para a inscrição.");
 			}
 		}
 		else {
-			result.use(Results.http()).sendError(HttpServletResponse.SC_BAD_REQUEST, "Por favor, especifique os parâmetros necessários para a inscrição.");
+			result.use(Results.http()).sendError(HttpServletResponse.SC_EXPECTATION_FAILED, "Não há nenhuma etapa de inscrição aberta no momento.");
 		}
+	}
+	
+	private Etapa etapaAtual() {
+		return (Etapa) query("FROM Etapa WHERE dataInicio <= NOW() AND (dataFim IS NULL OR dataFim > NOW()) ORDER BY dataInicio DESC").setMaxResults(1).uniqueResult();
 	}
 	
 	private void validateInscrito(final Inscrito inscrito) {
@@ -101,7 +124,7 @@ public class InscricaoController extends ControllerHelper {
 			naoPodeSerVazio("Empresa", inscrito.getEmpresa(), 256);
 		}
 		
-		naoPodeSerVazio("Cidade", inscrito.getCidade(), 256);
+		naoPodeSerVazio("Cidade", inscrito.getCidade(), 128);
 		naoPodeSerVazio("UF", inscrito.getUf(), 2);
 		naoPodeSerVazio("Como ficou sabendo do Evento?", inscrito.getComoFicouSabendoDoEvento(), 256);
 	}
