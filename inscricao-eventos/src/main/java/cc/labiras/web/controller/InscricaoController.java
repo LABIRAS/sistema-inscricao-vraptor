@@ -125,7 +125,8 @@ public class InscricaoController extends ControllerHelper {
 		}
 		
 		if (inscrito.isEstudante()) {
-			naoPodeSerVazio("Nível de Graduação", inscrito.getNivelGraduacao(), 256);
+			if (inscrito.getNivelGraduacao() == null) { validator.add(new SimpleMessage("validation", "Você deve selecionar um Nível de Graduação")); }
+//			naoPodeSerVazio("Nível de Graduação", inscrito.getNivelGraduacao(), 256);
 			naoPodeSerVazio("Curso", inscrito.getCurso(), 256);
 			naoPodeSerVazio("Última Instituição de Ensino", inscrito.getUltimaInstituicao(), 256);
 		}
@@ -136,11 +137,11 @@ public class InscricaoController extends ControllerHelper {
 		
 		naoPodeSerVazio("Cidade", inscrito.getCidade(), 128);
 		naoPodeSerVazio("UF", inscrito.getUf(), 2);
-		naoPodeSerVazio("Como ficou sabendo do Evento?", inscrito.getComoFicouSabendoDoEvento(), 256);
 		
-		if (inscrito.getIdade() < 1) {
-			validator.add(new SimpleMessage("validation", "Idade inválida"));
-		}
+		if (inscrito.getComoFicouSabendoDoEvento() == null) { validator.add(new SimpleMessage("validation", "Você deve selecionar Como você ficou sabendo do Evento")); }
+//		naoPodeSerVazio("Como ficou sabendo do Evento?", inscrito.getComoFicouSabendoDoEvento(), 256);
+		
+		if (inscrito.getIdade() < 1) { validator.add(new SimpleMessage("validation", "Idade inválida")); }
 	}
 	
 	private void naoPodeSerVazio(final String campo, final String valor, final int tamanho) {

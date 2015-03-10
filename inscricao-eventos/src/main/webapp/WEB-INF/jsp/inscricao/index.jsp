@@ -177,7 +177,7 @@
 							<md-option value="FACEBOOK">Post no Facebook</md-option>
 							<md-option value="TWITTER">Twitter</md-option>
 							<md-option value="OUTDOOR">Outdoor</md-option>
-							<md-option value="AMIGO">Fique sabendo por Amigos</md-option>
+							<md-option value="AMIGO">Fiquei sabendo por Amigos</md-option>
 							<md-option value="MATERIA_INTERNET">Matéria em Portal de Notícias</md-option>
 							<md-option value="MATERIA_JORNAL">Matéria em Jornal Impresso</md-option>
 							<md-option value="MATERIA_TV">TV</md-option>

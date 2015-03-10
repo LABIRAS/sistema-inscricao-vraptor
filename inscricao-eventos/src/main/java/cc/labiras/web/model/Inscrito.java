@@ -6,11 +6,15 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import cc.labiras.web.model.enumerations.ComoFicouSabendoEnum;
+import cc.labiras.web.model.enumerations.NivelGraduacaoEnum;
 import cc.labiras.web.util.JSONable;
 
 @Entity
@@ -35,8 +39,9 @@ public class Inscrito implements Serializable, JSONable {
 	@Column(nullable = false)
 	private boolean estudante;
 	
-	@Column(length = 256)
-	private String nivelGraduacao;
+	@Enumerated
+	@Column(nullable = true, length = 64)
+	private NivelGraduacaoEnum nivelGraduacao;
 	
 	@Column(length = 256)
 	private String curso;
@@ -56,8 +61,9 @@ public class Inscrito implements Serializable, JSONable {
 	@Column(nullable = false, length = 6)
 	private String uf;
 	
-	@Column(nullable = false)
-	private String comoFicouSabendoDoEvento;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 64)
+	private ComoFicouSabendoEnum comoFicouSabendoDoEvento;
 	
 	@Column(nullable = false)
 	private boolean jaConheceArduino;
@@ -123,11 +129,11 @@ public class Inscrito implements Serializable, JSONable {
 		this.estudante = estudante;
 	}
 
-	public String getNivelGraduacao() {
+	public NivelGraduacaoEnum getNivelGraduacao() {
 		return nivelGraduacao;
 	}
 
-	public void setNivelGraduacao(final String nivelGraduacao) {
+	public void setNivelGraduacao(final NivelGraduacaoEnum nivelGraduacao) {
 		this.nivelGraduacao = nivelGraduacao;
 	}
 
@@ -179,11 +185,11 @@ public class Inscrito implements Serializable, JSONable {
 		this.uf = uf;
 	}
 
-	public String getComoFicouSabendoDoEvento() {
+	public ComoFicouSabendoEnum getComoFicouSabendoDoEvento() {
 		return comoFicouSabendoDoEvento;
 	}
 
-	public void setComoFicouSabendoDoEvento(final String comoFicouSabendoDoEvento) {
+	public void setComoFicouSabendoDoEvento(final ComoFicouSabendoEnum comoFicouSabendoDoEvento) {
 		this.comoFicouSabendoDoEvento = comoFicouSabendoDoEvento;
 	}
 
