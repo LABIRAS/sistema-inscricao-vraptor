@@ -1,14 +1,4 @@
 body {
-	font-family: "Open Sans", Roboto, Noto, "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-md-whiteframe {
-	background: #fff;
-}
-md-toolbar h1 {
-	font-size: 1.250em;
-	font-weight: 400;
-	margin: auto;
-}
-md-toast {
-	position: fixed;
+	padding-top: 60px;
+	__font-family: "Open Sans", Roboto, Noto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

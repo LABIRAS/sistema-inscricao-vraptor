@@ -1,6 +1,8 @@
 package cc.labiras.web.model;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Map;
 
@@ -16,6 +18,7 @@ import javax.persistence.TemporalType;
 import cc.labiras.web.model.enumerations.ComoFicouSabendoEnum;
 import cc.labiras.web.model.enumerations.NivelGraduacaoEnum;
 import cc.labiras.web.util.JSONable;
+import cc.labiras.web.util.JsonUtils;
 
 @Entity
 public class Inscrito implements Serializable, JSONable {
@@ -235,5 +238,29 @@ public class Inscrito implements Serializable, JSONable {
 
 	public void setDataPagamento(final Date dataPagamento) {
 		this.dataPagamento = dataPagamento;
+	}
+	
+	public String getGravatar() {
+		return md5(email);
+	}
+	
+	public static String md5(final String data) {
+		final StringBuilder hash = new StringBuilder();
+		
+		try {
+			final MessageDigest digester = MessageDigest.getInstance("MD5");
+			final byte[] hashedData = digester.digest(data.getBytes());
+			for (final byte b : hashedData) {
+				hash.append(String.format("%02x", b));
+			}
+		} catch (final NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		
+		return hash.toString();
+	}
+	
+	public String toString() {
+		return JsonUtils.toJson(this);
 	}
 }

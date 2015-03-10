@@ -48,6 +48,18 @@ public class InscricaoController extends ControllerHelper {
 	@Path("/")
 	public void index() { }
 	
+	@Path("/profile/{id:\\d+}")
+	public void profile(final Long id) {
+		final Inscrito inscrito = (Inscrito) session.get(Inscrito.class, id);
+		
+		if (inscrito != null) {
+			result.include("inscrito", inscrito);
+		}
+		else {
+			result.redirectTo(this).index();
+		}
+	}
+	
 	@Post
 	@Path("/api/cadastrar")
 	public void cadastrar(final Inscrito i) {
@@ -69,7 +81,12 @@ public class InscricaoController extends ControllerHelper {
 							session.save(i);
 							t.commit();
 							
-							jsonResponseSuccess();
+							if (isAjaxRequest()) {
+								jsonResponse(i);
+							}
+							else {
+								result.redirectTo(this).profile(i.getId());
+							}
 						} catch (final Exception e) {
 							e.printStackTrace();
 							controladorInscricoes.etapa(etapa).removerInscrito();
@@ -99,6 +116,12 @@ public class InscricaoController extends ControllerHelper {
 		else {
 			result.use(Results.http()).sendError(HttpServletResponse.SC_EXPECTATION_FAILED, "Não há nenhuma etapa de inscrição aberta no momento.");
 		}
+	}
+	
+	@Post
+	@Path("/api/alterar")
+	public void alterar(final Inscrito i) {
+		
 	}
 	
 	private Etapa etapaAtual() {
@@ -180,9 +203,15 @@ public class InscricaoController extends ControllerHelper {
 	}
 	
 	private void sendErrors(final String... messages) {
-		final Map<String, Object> errors = new HashMap<>(1);
-		errors.put("errors", Arrays.asList(messages));
-		setupJsonValidationResult(validator, errors);
+		if (isAjaxRequest()) {
+			final Map<String, Object> errors = new HashMap<>(1);
+			errors.put("errors", Arrays.asList(messages));
+			setupJsonValidationResult(validator, errors);
+		}
+		else {
+			result.include("errors", Arrays.asList(messages));
+			validator.onErrorRedirectTo(this).index();
+		}
 	}
 	
 	/**

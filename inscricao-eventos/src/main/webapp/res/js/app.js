@@ -86,12 +86,20 @@
 		return formData.length > 1 ? formData.substring(1) : formData;
 	};
 	
-	var app = angular.module("inscricaoLabirasApp", ["ngMaterial"]);
+	var app = angular.module("inscricaoLabirasApp", []);
 	
-	app.controller("PageController", ["$scope", "$http", "$mdToast", function ($scope, $http, $mdToast) {
-		$scope.inscrito = { uf: "PI", nivelGraduacao: "MEDIO_INCOMPLETO", comoFicouSabendoDoEvento: "NENHUM" };
+	app.controller("PageController", ["$scope", "$http", function ($scope, $http) {
+		var inscrito = { uf: "PI", nivelGraduacao: "MEDIO_INCOMPLETO", comoFicouSabendoDoEvento: "NENHUM" };
+		$scope.inscrito = inscrito;
+		
+		$scope.setJaConheco = function () {
+			if (!inscrito.jaConheceArduino) {
+				inscrito.jaUsouArduino = false;
+			}
+		};
 		
 		$scope.submeter = function (evt) {
+			/*
 			if (evt) { evt.preventDefault(); }
 			$http({
 				method: "post",
@@ -100,8 +108,8 @@
 				cache: false,
 				headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" }
 			}).success(function (data) {
-				if (data.success) {
-					
+				if (data.id) {
+					window.location.href = document.forms[0].getAttribute("data-urlbase") + "/" + data.id;
 				}
 				else {
 					for (var i = 0; i < data.errors.length; i++) {
@@ -112,6 +120,7 @@
 				console.log(arguments);
 				$mdToast.show($mdToast.simple().content("Não foi possível efetuar sua inscrição neste momento. Por favor, tente novamente mais tarde!").position("top left").hideDelay(10000));
 			});
+			*/
 		};
 	}]);
 })(angular, window.jQuery ? jQuery : null, window);
