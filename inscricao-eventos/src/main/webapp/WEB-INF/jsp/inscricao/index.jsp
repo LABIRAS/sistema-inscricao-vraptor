@@ -51,36 +51,36 @@
 				<p>Para se inscrever no Arduino Day 2015, basta preencher este formulário:</p>
 			</md-content>
 			
-			<form name="formInscricao" action="<fmt:message key="app.urlBase" />/api/cadastrar" ng-submit="formInscricao.$valid && submeter($event)" novalidate>
+			<form name="formInscricao" id="formInscricao" action="<fmt:message key="app.urlBase" />/api/cadastrar" ng-submit="formInscricao.$valid && !submetendoDados && submeter($event)" novalidate>
 				<md-content class="md-padding" layout="row" layout-sm="column" style="font-size:1.5em;padding-bottom: 0;">
 					<md-input-container md-no-float style="padding-bottom:0" flex>
 						<label>Seu Nome*</label>
-						<input type="text" ng-model="inscrito.nome" required>
+						<input type="text" ng-model="inscrito.nome" required ng-disabled="submetendoDados">
 					</md-input-container>
 					<md-input-container md-no-float style="padding-bottom:0" flex>
 						<label>E-mail*</label>
-						<input type="email" ng-model="inscrito.email" required>
+						<input type="email" ng-model="inscrito.email" required ng-disabled="submetendoDados">
 					</md-input-container>
 				</md-content>
 				
 				<md-content class="md-padding" layout="row" layout-sm="column">
 					<md-input-container flex>
 						<label>CPF*</label>
-						<input type="text" ng-model="inscrito.cpf" required>
+						<input type="text" ng-model="inscrito.cpf" required ng-disabled="submetendoDados">
 					</md-input-container>
 					
 					<md-input-container flex>
 						<label>Idade*</label>
-						<input type="number" ng-model="inscrito.idade" min="0" max="150" required>
+						<input type="number" ng-model="inscrito.idade" min="0" max="150" required ng-disabled="submetendoDados">
 					</md-input-container>
 					
 					<md-input-container flex>
 						<label>Cidade*</label>
-						<input type="text" ng-model="inscrito.cidade" required>
+						<input type="text" ng-model="inscrito.cidade" required ng-disabled="submetendoDados">
 					</md-input-container>
 					
 					<md-input-container flex>
-						<md-select ng-model="inscrito.uf" ng-required="true" style="margin-top:25px">
+						<md-select ng-model="inscrito.uf" ng-required="true" style="margin-top:25px" ng-disabled="submetendoDados">
 							<md-option value="AC">Acre</md-option>
 							<md-option value="AL">Alagoas</md-option>
 							<md-option value="AM">Amazônia</md-option>
@@ -117,17 +117,17 @@
 				<md-content class="md-padding" layout="row" layout-sm="column">
 					<md-content flex layout="column">
 						<md-input-container style="padding-bottom:0">
-							<md-checkbox ng-model="inscrito.estudante" style="margin-top:0;margin-bottom:0" aria-label="Sou Estudante">Sou um Estudante</md-checkbox>
+							<md-checkbox ng-model="inscrito.estudante" style="margin-top:0;margin-bottom:0" aria-label="Sou Estudante" ng-disabled="submetendoDados">Sou um Estudante</md-checkbox>
 						</md-input-container>
 						
 						<md-content flex layout="row" layout-sm="column">
 							<md-input-container flex>
 								<label>Qual seu Curso?*</label>
-								<input type="text" ng-model="inscrito.curso" ng-required="inscrito.estudante" ng-disabled="!inscrito.estudante">
+								<input type="text" ng-model="inscrito.curso" ng-required="inscrito.estudante" ng-disabled="!inscrito.estudante || submetendoDados">
 							</md-input-container>
 							
 							<md-input-container flex>
-								<md-select ng-model="inscrito.nivelGraduacao" style="margin-top:25px">
+								<md-select ng-model="inscrito.nivelGraduacao" style="margin-top:25px" ng-disabled="submetendoDados">
 									<md-option value="FUNDAMENTAL_INCOMPLETO">Ensino Fundamental Incompleto</md-option>
 									<md-option value="FUNDAMENTAL_COMPLETO">Ensino Fundamental Completo</md-option>
 									<md-option value="MEDIO_INCOMPLETO">Ensino Médio Incompleto</md-option>
@@ -143,15 +143,59 @@
 								</md-select>
 							</md-input-container>
 						</md-content>
+						
+						<md-content flex layout="row" layout-sm="column">
+							<md-input-container flex>
+								<label>Em que Instituição de Ensino você está hoje?*</label>
+								<input type="text" ng-model="inscrito.ultimaInstituicao" ng-required="inscrito.estudante" ng-disabled="!inscrito.estudante || submetendoDados">
+							</md-input-container>
+						</md-content>
 					</md-content>
 					
 					<md-content flex layout="column">
 						<md-input-container style="padding-bottom:0">
-							<md-checkbox ng-model="inscrito.profissional" style="margin-top:0;margin-bottom:0" aria-label="Sou Estudante">Sou um Profissional</md-checkbox>
+							<md-checkbox ng-model="inscrito.profissional" style="margin-top:0;margin-bottom:0" aria-label="Sou um Profissional" ng-disabled="submetendoDados">Sou um Profissional</md-checkbox>
 						</md-input-container>
 						<md-content flex layout="row" layout-sm="column">
+							<md-input-container flex>
+								<label>Empresa*</label>
+								<input type="text" ng-model="inscrito.empresa" ng-required="inscrito.profissional" ng-disabled="!inscrito.profissional || submetendoDados">
+							</md-input-container>
 						</md-content>
+						<md-content flex layout="row" layout-sm="column"></md-content>
 					</md-content>
+				</md-content>
+				
+				<hr size="1" color="#f5f5f5" noshade />
+				
+				<md-content class="md-padding" layout="row" layout-sm="column">
+					<md-input-container flex>
+						<p>Como você descobriu sobre o Arduino Day 2015?</p>
+						<md-select ng-model="inscrito.comoFicouSabendoDoEvento" ng-disabled="submetendoDados">
+							<md-option value="NENHUM">Selecione...</md-option>
+							<md-option value="SITE_EVENTO">Site do Evento</md-option>
+							<md-option value="FACEBOOK">Post no Facebook</md-option>
+							<md-option value="TWITTER">Twitter</md-option>
+							<md-option value="OUTDOOR">Outdoor</md-option>
+							<md-option value="AMIGO">Fique sabendo por Amigos</md-option>
+							<md-option value="MATERIA_INTERNET">Matéria em Portal de Notícias</md-option>
+							<md-option value="MATERIA_JORNAL">Matéria em Jornal Impresso</md-option>
+							<md-option value="MATERIA_TV">TV</md-option>
+							<md-option value="OUTROS">Outras</md-option>
+						</md-select>
+					</md-input-container>
+					
+					<md-input-container flex>
+						<md-checkbox ng-model="inscrito.jaConheceArduino" aria-label="Já conheço Arduino" ng-disabled="submetendoDados">Já <strong>conheço</strong> o Arduino</md-checkbox>
+					</md-input-container>
+					
+					<md-input-container flex>
+						<md-checkbox ng-model="inscrito.jaUsouArduino" aria-label="Já usei Arduino" ng-disabled="submetendoDados">Já <strong>usei</strong> o Arduino</md-checkbox>
+					</md-input-container>
+				</md-content>
+				
+				<md-content class="md-padding" layout="row" layout-sm="column">
+					<md-button type="submit" class="md-raised" ng-disabled="formInscricao.$invalid || submetendoDados" ng-click="formInscricao.$valid && submeter($event)">Efetuar Inscrição!</md-button>
 				</md-content>
 			</form>
 		</md-whiteframe>

@@ -23,7 +23,7 @@ public class Inscrito implements Serializable, JSONable {
 	@Column(nullable = false, length = 256)
 	private String nome;
 	
-	@Column(nullable = false, length = 256)
+	@Column(nullable = false, unique = true, length = 256)
 	private String email;
 	
 	@Column(nullable = false, unique = true, length = 32)
@@ -60,7 +60,7 @@ public class Inscrito implements Serializable, JSONable {
 	private String comoFicouSabendoDoEvento;
 	
 	@Column(nullable = false)
-	private String jaConheceArduino;
+	private boolean jaConheceArduino;
 	
 	@Column(nullable = false)
 	private boolean jaUsouArduino;
@@ -187,11 +187,11 @@ public class Inscrito implements Serializable, JSONable {
 		this.comoFicouSabendoDoEvento = comoFicouSabendoDoEvento;
 	}
 
-	public String getJaConheceArduino() {
+	public boolean getJaConheceArduino() {
 		return jaConheceArduino;
 	}
 
-	public void setJaConheceArduino(final String jaConheceArduino) {
+	public void setJaConheceArduino(final boolean jaConheceArduino) {
 		this.jaConheceArduino = jaConheceArduino;
 	}
 

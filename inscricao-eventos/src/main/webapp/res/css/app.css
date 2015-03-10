@@ -9,3 +9,6 @@ md-toolbar h1 {
 	font-weight: 400;
 	margin: auto;
 }
+md-toast {
+	position: fixed;
+}

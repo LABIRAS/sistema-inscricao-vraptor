@@ -1,19 +1,4 @@
 (function (angular, $, window) {
-	"use strict";
-	var thisScript = (function (allScripts) {
-		for (var i = 0; i < allScripts.length; i++) {
-			if (allScripts[i].getAttribute("src") && allScripts[i].getAttribute("src").indexOf("/res/js/admin-app.js") >= 0) {
-				return allScripts[i];
-			}
-		}
-		return null;
-	})(document.getElementsByTagName("script"));
-	
-	var contextPath = "/inscricao";
-	if (thisScript) {
-		contextPath = thisScript.getAttribute("data-cp");
-	}
-	
 	function buildParam(name, value) {
 		if (value) {
 			if (angular.isArray(value)) {
@@ -103,21 +88,29 @@
 	
 	var app = angular.module("inscricaoLabirasApp", ["ngMaterial"]);
 	
-	app.controller("PageController", ["$scope", "$http", "$mdSidenav", function ($scope, $http, $mdSidenav) {
-		$scope.inscrito = { uf: "PI", nivelGraduacao: "MEDIO_INCOMPLETO" };
+	app.controller("PageController", ["$scope", "$http", "$mdToast", function ($scope, $http, $mdToast) {
+		$scope.inscrito = { uf: "PI", nivelGraduacao: "MEDIO_INCOMPLETO", comoFicouSabendoDoEvento: "NENHUM" };
 		
 		$scope.submeter = function (evt) {
 			if (evt) { evt.preventDefault(); }
 			$http({
 				method: "post",
-				url: contextPath + "/api/cadastrar",
+				url: document.forms[0].action,
 				data: buildFormData({ i: $scope.inscrito }),
 				cache: false,
 				headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" }
 			}).success(function (data) {
-				
-			}).error(function () {
-				
+				if (data.success) {
+					
+				}
+				else {
+					for (var i = 0; i < data.errors.length; i++) {
+						$mdToast.show($mdToast.simple().content(data.errors[i]).position("top left").hideDelay(10000));
+					}
+				}
+			}).error(function (response) {
+				console.log(arguments);
+				$mdToast.show($mdToast.simple().content("Não foi possível efetuar sua inscrição neste momento. Por favor, tente novamente mais tarde!").position("top left").hideDelay(10000));
 			});
 		};
 	}]);

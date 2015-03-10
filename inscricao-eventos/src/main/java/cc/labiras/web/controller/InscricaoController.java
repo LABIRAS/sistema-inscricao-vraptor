@@ -107,11 +107,21 @@ public class InscricaoController extends ControllerHelper {
 	
 	private void validateInscrito(final Inscrito inscrito) {
 		naoPodeSerVazio("Nome", inscrito.getNome(), 256);
-		naoPodeSerVazio("E-mail", inscrito.getEmail(), 256, "[^@]+@[^@]+(\\.\\w){2,3}");	// email@alguma.coisa.com
 		naoPodeSerVazio("CPF", inscrito.getCpf(), 32, "\\d{3}\\.?\\d{3}\\.?\\d{3}\\-?\\d{2}");
+		naoPodeSerVazio("E-mail", inscrito.getEmail(), 256, "[^@]+@[^@]+(\\.\\w+){1,3}");	// email@alguma.coisa.com
+		if (inscrito.getEmail() != null) {
+			final int emailCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE email = :email").setString("email", inscrito.getEmail()).uniqueResult()).intValue();
+			if (emailCount > 0) { validator.add(new SimpleMessage("validation", "Este E-mail já encontra-se cadastrado!")); }
+		}
 		
-		if (inscrito.getCpf() != null && !isCPF(inscrito.getCpf())) {
-			validator.add(new SimpleMessage("validation", "CPF inválido"));
+		if (inscrito.getCpf() != null) {
+			if (!isCPF(inscrito.getCpf())) {
+				validator.add(new SimpleMessage("validation", "CPF inválido"));
+			}
+			else {
+				final int cpfCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE cpf = :cpf").setString("cpf", inscrito.getCpf()).uniqueResult()).intValue();
+				if (cpfCount > 0) { validator.add(new SimpleMessage("validation", "Este CPF já encontra-se cadastrado!")); }
+			}
 		}
 		
 		if (inscrito.isEstudante()) {
@@ -127,6 +137,10 @@ public class InscricaoController extends ControllerHelper {
 		naoPodeSerVazio("Cidade", inscrito.getCidade(), 128);
 		naoPodeSerVazio("UF", inscrito.getUf(), 2);
 		naoPodeSerVazio("Como ficou sabendo do Evento?", inscrito.getComoFicouSabendoDoEvento(), 256);
+		
+		if (inscrito.getIdade() < 1) {
+			validator.add(new SimpleMessage("validation", "Idade inválida"));
+		}
 	}
 	
 	private void naoPodeSerVazio(final String campo, final String valor, final int tamanho) {
