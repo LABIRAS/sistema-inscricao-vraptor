@@ -1,4 +1,28 @@
 body {
 	padding-top: 60px;
-	__font-family: "Open Sans", Roboto, Noto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#profile {
+	margin-top: 15px;
+}
+#profile-image-container {
+	text-align: center;
+}
+#profile-image {
+	-webkit-border-radius: 999px;
+	-moz-border-radius: 999px;
+	border-radius: 999px;
+}
+#profile-extra {
+	margin-top: 15px;
+	font-size: 1.2em;
+}
+#profile-extra h2:first-child {
+	margin-top: 0;
+	padding-top: 0;
+}
+@media (min-width: 768px) {
+	#profile-extra .col-sm-3 {
+		text-align: right;
+	}
 }

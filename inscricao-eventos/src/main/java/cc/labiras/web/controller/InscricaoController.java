@@ -61,7 +61,7 @@ public class InscricaoController extends ControllerHelper {
 	}
 	
 	@Post
-	@Path("/api/cadastrar")
+	@Path("/cadastrar")
 	public void cadastrar(final Inscrito i) {
 		final Etapa etapa = etapaAtual();
 		
@@ -71,8 +71,9 @@ public class InscricaoController extends ControllerHelper {
 					i.setDataInscricao(new Date());
 					i.setPago(etapa.getPreco() <= 0);
 					if (i.isPago()) { i.setDataPagamento(new Date()); }
+					i.setEtapa(etapa);
 					
-					validateInscrito(i);
+					validateInscrito(i, null, null);
 					
 					if (!validator.hasErrors()) {
 						final Transaction t = session.beginTransaction();
@@ -119,21 +120,98 @@ public class InscricaoController extends ControllerHelper {
 	}
 	
 	@Post
-	@Path("/api/alterar")
+	@Path("/alterar")
 	public void alterar(final Inscrito i) {
-		
+		if (i != null && i.getId() != null && i.getId() > 0) {
+			final Inscrito inscritoDB = (Inscrito) session.get(Inscrito.class, i.getId());
+			
+			if (inscritoDB != null) {
+				i.setDataInscricao(inscritoDB.getDataInscricao());
+				i.setPago(inscritoDB.isPago());
+				i.setDataPagamento(inscritoDB.getDataPagamento());
+				i.setEtapa(inscritoDB.getEtapa());
+				
+				validateInscrito(i, inscritoDB.getCpf(), inscritoDB.getEmail());
+				
+				if (!validator.hasErrors()) {
+					final Transaction t = session.beginTransaction();
+					
+					try {
+						final Inscrito salvo = (Inscrito) session.merge(i);
+						t.commit();
+						
+						if (isAjaxRequest()) {
+							jsonResponse(salvo);
+						}
+						else {
+							result.redirectTo(this).profile(salvo.getId());
+						}
+					} catch (final Exception e) {
+						e.printStackTrace();
+						
+						try {
+							t.rollback();
+						} catch (final Exception e2) {
+							sendErrors("Erro ao salvar informações no banco de dados!!");
+							return;
+						}
+						
+						sendErrors("Erro ao salvar informações no banco de dados");
+					}
+				}
+				else {
+					sendErrors();
+				}
+			}
+			else {
+				sendErrors("Sinto muito, mas você não existe em nosso banco de dados :(");
+			}
+		}
+		else {
+			sendErrors("Parâmetros inválidos");
+		}
+	}
+	
+	@Path("/api/inscrito")
+	public void inscrito(final String email, final String cpf) {
+		if (email != null && cpf != null) {
+			final Inscrito inscrito = (Inscrito) query("FROM Inscrito WHERE email = :email AND cpf = :cpf").setString("email", email).setString("cpf", cpf).uniqueResult();
+			
+			if (inscrito != null) {
+				if (isAjaxRequest()) {
+					jsonResponse(inscrito);
+				}
+				else {
+					result.redirectTo(this).profile(inscrito.getId());
+				}
+			}
+			else {
+				result.notFound();
+			}
+		}
+		else {
+			result.notFound();
+		}
 	}
 	
 	private Etapa etapaAtual() {
 		return (Etapa) query("FROM Etapa WHERE dataInicio <= NOW() AND (dataFim IS NULL OR dataFim > NOW()) ORDER BY dataInicio DESC").setMaxResults(1).uniqueResult();
 	}
 	
-	private void validateInscrito(final Inscrito inscrito) {
+	private void validateInscrito(final Inscrito inscrito, final String cpf, final String email) {
 		naoPodeSerVazio("Nome", inscrito.getNome(), 256);
 		naoPodeSerVazio("CPF", inscrito.getCpf(), 32, "\\d{3}\\.?\\d{3}\\.?\\d{3}\\-?\\d{2}");
 		naoPodeSerVazio("E-mail", inscrito.getEmail(), 256, "[^@]+@[^@]+(\\.\\w+){1,3}");	// email@alguma.coisa.com
 		if (inscrito.getEmail() != null) {
-			final int emailCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE email = :email").setString("email", inscrito.getEmail()).uniqueResult()).intValue();
+			final int emailCount;
+			
+			if (email != null) {
+				emailCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE email = :email AND email <> :originalEmail").setString("email", inscrito.getEmail()).setString("originalEmail", email).uniqueResult()).intValue();
+			}
+			else {
+				emailCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE email = :email").setString("email", inscrito.getEmail()).uniqueResult()).intValue();
+			}
+			
 			if (emailCount > 0) { validator.add(new SimpleMessage("validation", "Este E-mail já encontra-se cadastrado!")); }
 		}
 		
@@ -142,7 +220,15 @@ public class InscricaoController extends ControllerHelper {
 				validator.add(new SimpleMessage("validation", "CPF inválido"));
 			}
 			else {
-				final int cpfCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE cpf = :cpf").setString("cpf", inscrito.getCpf()).uniqueResult()).intValue();
+				final int cpfCount;
+				
+				if (cpf != null) {
+					cpfCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE cpf = :cpf AND cpf <> :originalCpf").setString("cpf", inscrito.getCpf()).setString("originalCpf", cpf).uniqueResult()).intValue();
+				}
+				else {
+					cpfCount = ((Number) query("SELECT count(*) FROM Inscrito WHERE cpf = :cpf").setString("cpf", inscrito.getCpf()).uniqueResult()).intValue();
+				}
+				
 				if (cpfCount > 0) { validator.add(new SimpleMessage("validation", "Este CPF já encontra-se cadastrado!")); }
 			}
 		}

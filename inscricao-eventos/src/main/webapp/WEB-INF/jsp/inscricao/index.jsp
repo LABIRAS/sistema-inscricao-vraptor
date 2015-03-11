@@ -36,7 +36,6 @@
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-aria.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.js"></script>
 --%>
-<script type="text/javascript">var INSCRITO = ${}</script>
 <script src="<fmt:message key="app.urlBase" />/res/js/app.js"></script>
 </head>
 <body ng-controller="PageController">
@@ -71,12 +70,53 @@
 				<p>Your bones don't break, mine do. That's clear. Your cells react to bacteria and viruses differently than mine. You don't get sick, I do. That's also clear. But for some reason, you and I react the exact same way to water. We swallow it too fast, we choke. We get some in our lungs, we drown. However unreal it may seem, we are connected, you and I. We're on the same curve, just on opposite ends.</p>
 			</div>
 		</div>
+		
+		<div class="row">
+			<div class="col-xs-12">
+				<c:if test="${info ne null}">
+					<div class="alert alert-info alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+						<strong>Hey!</strong> ${info}
+					</div>
+				</c:if>
+				
+				<c:if test="${warn ne null}">
+					<div class="alert alert-warning alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+						<strong>Atenção:</strong> ${warn}
+					</div>
+				</c:if>
+				
+				<c:if test="${success ne null}">
+					<div class="alert alert-success alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+						<strong>Sucesso!</strong> ${success}
+					</div>
+				</c:if>
+				
+				<c:if test="${error ne null}">
+					<div class="alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+						<strong>Erro!</strong> ${error}
+					</div>
+				</c:if>
+				
+				<c:if test="${errors ne null && !empty(errors)}">
+					<div class="alert alert-danger alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span></button>
+						<h4>Por favor, corrija o seguinte:</h4> 
+						<ol><c:forEach items="${errors}" var="item"><li>${item.message}</li></c:forEach></ol>
+					</div>
+				</c:if>
+			</div>
+		</div>
+		
 		<div class="row">
 			<div class="col-xs-12 col-md-8">
 				<div class="well">
-					<form name="formInscricao" action="<fmt:message key="app.urlBase" />/cadastrar" method="post" class="form-horizontal">
+					<form name="formInscricao" action="{{'<fmt:message key="app.urlBase" />/' + acaoSubmit}}" method="post" class="form-horizontal">
 						<fieldset>
-							<legend>Nova Inscrição</legend>
+							<legend ng-bind="acaoSubmit == 'cadastrar' ? 'Nova Inscrição' : 'Altere seus dados'"></legend>
 							<div class="form-group">
 								<label for="nome" class="col-sm-3 control-label">Nome Completo *</label>
 								<div class="col-sm-9">
@@ -144,12 +184,12 @@
 							</div>
 							
 							<div class="form-group">
-								<div class="col-xs-12 col-sm-6">
+								<div class="col-xs-12 col-sm-offset-3 col-sm-4">
 									<div class="checkbox">
 										<h4><label><input type="checkbox" name="i.estudante" ng-model="inscrito.estudante" id="estudante" ng-required="!inscrito.estudante && !inscrito.profissional"> Sou Estudante</label></h4>
 									</div>
 								</div>
-								<div class="col-xs-12 col-sm-6">
+								<div class="col-xs-12 col-sm-5">
 									<div class="checkbox">
 										<h4><label><input type="checkbox" name="i.profissional" ng-model="inscrito.profissional" id="profissional" ng-required="!inscrito.estudante && !inscrito.profissional"> Sou Profissional</label></h4>
 									</div>
@@ -232,7 +272,8 @@
 							</div>
 							
 							<div class="row">
-								<div class="col-sm-9 col-offset-md-3">
+								<div class="col-sm-9 col-md-offset-3">
+									<input type="hidden" name="i.id" id="i_id" />
 									<button type="reset" class="btn btn-default">Cancelar</button>
 									<button type="submit" class="btn btn-primary">Vamos lá!</button>
 								</div>
@@ -244,170 +285,31 @@
 			
 			<div class="col-xs-12 col-md-4">
 				<h4>Já está inscrito?</h4>
+				<p>Quer alterar algo na sua inscrição? Preencha esses campos e pronto ;)</p>
+				
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label for="emailInscrito" class="col-sm-3 control-label">E-mail *</label>
+						<div class="col-sm-9">
+							<input type="email" id="emailInscrito" ng-model="inscritoBusca.email" class="form-control" placeholder="email@bem-legal.com" ng-disabled="submetendoDados">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="cpfInscrito" class="col-sm-3 control-label">CPF *</label>
+						<div class="col-sm-9">
+							<input type="text" id="cpfInscrito" ng-model="inscritoBusca.cpf" class="form-control" placeholder="CPF" required ng-disabled="submetendoDados">
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-sm-9 col-md-offset-3">
+							<button type="button" class="btn btn-primary" ng-click="alterar('<fmt:message key="app.urlBase" />')" ng-disabled="submetendoDados">Alterar meus dados</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-		<h1></h1>
 	</div>
-	<%--
-	<md-toolbar layout="row">
-		<h1><fmt:message key="website.title" /></h1>
-	</md-toolbar>
-	<md-content md-scroll-y flex class="md-padding">
-		<md-whiteframe class="md-whiteframe-z1" layout="column">
-			<md-content class="md-padding">
-				<h1>Olá!</h1>
-				<p>Para se inscrever no Arduino Day 2015, basta preencher este formulário:</p>
-			</md-content>
-			
-			<form name="formInscricao" id="formInscricao" data-urlbase="<fmt:message key="app.urlBase" />" action="<fmt:message key="app.urlBase" />/api/cadastrar" ng-submit="formInscricao.$valid && !submetendoDados && submeter($event)" novalidate>
-				<md-content class="md-padding" layout="row" layout-sm="column" style="font-size:1.5em;padding-bottom: 0;">
-					<md-input-container md-no-float style="padding-bottom:0" flex>
-						<label>Seu Nome*</label>
-						<input type="text" ng-model="inscrito.nome" required ng-disabled="submetendoDados">
-					</md-input-container>
-					<md-input-container md-no-float style="padding-bottom:0" flex>
-						<label>E-mail*</label>
-						<input type="email" ng-model="inscrito.email" required ng-disabled="submetendoDados">
-					</md-input-container>
-				</md-content>
-				
-				<md-content class="md-padding" layout="row" layout-sm="column">
-					<md-input-container flex>
-						<label>CPF*</label>
-						<input type="text" ng-model="inscrito.cpf" required ng-disabled="submetendoDados">
-					</md-input-container>
-					
-					<md-input-container flex>
-						<label>Idade*</label>
-						<input type="number" ng-model="inscrito.idade" min="0" max="150" required ng-disabled="submetendoDados">
-					</md-input-container>
-					
-					<md-input-container flex>
-						<label>Cidade*</label>
-						<input type="text" ng-model="inscrito.cidade" required ng-disabled="submetendoDados">
-					</md-input-container>
-					
-					<md-input-container flex>
-						<md-select ng-model="inscrito.uf" ng-required="true" style="margin-top:25px" ng-disabled="submetendoDados">
-							<md-option value="AC">Acre</md-option>
-							<md-option value="AL">Alagoas</md-option>
-							<md-option value="AM">Amazônia</md-option>
-							<md-option value="AP">Amapá</md-option>
-							<md-option value="BA">Bahia</md-option>
-							<md-option value="CE">Ceará</md-option>
-							<md-option value="DF">Distrito Federal</md-option>
-							<md-option value="ES">Espírito Santo</md-option>
-							<md-option value="GO">Goiás</md-option>
-							<md-option value="MA">Maranhão</md-option>
-							<md-option value="MG">Minas Gerais</md-option>
-							<md-option value="MS">Mato Grosso do Sul</md-option>
-							<md-option value="MT">Mato Grosso</md-option>
-							<md-option value="PA">Pará</md-option>
-							<md-option value="PB">Paraíba</md-option>
-							<md-option value="PE">Pernambuco</md-option>
-							<md-option value="PI">Piauí</md-option>
-							<md-option value="PR">Paraná</md-option>
-							<md-option value="RJ">Rio de Janeiro</md-option>
-							<md-option value="RN">Rio Grande do Norte</md-option>
-							<md-option value="RO">Rondônia</md-option>
-							<md-option value="RR">Roraima</md-option>
-							<md-option value="RS">Rio Grande do Sul</md-option>
-							<md-option value="SC">Santa Catarina</md-option>
-							<md-option value="SE">Sergipe</md-option>
-							<md-option value="SP">São Paulo</md-option>
-							<md-option value="TO">Tocantins</md-option>
-						</md-select>
-					</md-input-container>
-				</md-content>
-				
-				<hr size="1" color="#f5f5f5" noshade />
-				
-				<md-content class="md-padding" layout="row" layout-sm="column">
-					<md-content flex layout="column">
-						<md-input-container style="padding-bottom:0">
-							<md-checkbox ng-model="inscrito.estudante" style="margin-top:0;margin-bottom:0" aria-label="Sou Estudante" ng-disabled="submetendoDados">Sou um Estudante</md-checkbox>
-						</md-input-container>
-						
-						<md-content flex layout="row" layout-sm="column">
-							<md-input-container flex>
-								<label>Qual seu Curso?*</label>
-								<input type="text" ng-model="inscrito.curso" ng-required="inscrito.estudante" ng-disabled="!inscrito.estudante || submetendoDados">
-							</md-input-container>
-							
-							<md-input-container flex>
-								<md-select ng-model="inscrito.nivelGraduacao" style="margin-top:25px" ng-disabled="submetendoDados">
-									<md-option value="FUNDAMENTAL_INCOMPLETO">Ensino Fundamental Incompleto</md-option>
-									<md-option value="FUNDAMENTAL_COMPLETO">Ensino Fundamental Completo</md-option>
-									<md-option value="MEDIO_INCOMPLETO">Ensino Médio Incompleto</md-option>
-									<md-option value="MEDIO_COMPLETO">Ensino Médio Completo</md-option>
-									<md-option value="TECNICO">Técnico</md-option>
-									<md-option value="LICENCIATURA">Licenciatura</md-option>
-									<md-option value="TECNOLOGO">Tecnólogo</md-option>
-									<md-option value="BACHAREL">Bacharel</md-option>
-									<md-option value="ESPECIALIZACAO">Especialização</md-option>
-									<md-option value="MESTRADO">Mestrado</md-option>
-									<md-option value="DOUTORADO">Doutorado</md-option>
-									<md-option value="POS_DOUTORADO">Pós-Doutorado</md-option>
-								</md-select>
-							</md-input-container>
-						</md-content>
-						
-						<md-content flex layout="row" layout-sm="column">
-							<md-input-container flex>
-								<label>Em que Instituição de Ensino você está hoje?*</label>
-								<input type="text" ng-model="inscrito.ultimaInstituicao" ng-required="inscrito.estudante" ng-disabled="!inscrito.estudante || submetendoDados">
-							</md-input-container>
-						</md-content>
-					</md-content>
-					
-					<md-content flex layout="column">
-						<md-input-container style="padding-bottom:0">
-							<md-checkbox ng-model="inscrito.profissional" style="margin-top:0;margin-bottom:0" aria-label="Sou um Profissional" ng-disabled="submetendoDados">Sou um Profissional</md-checkbox>
-						</md-input-container>
-						<md-content flex layout="row" layout-sm="column">
-							<md-input-container flex>
-								<label>Empresa*</label>
-								<input type="text" ng-model="inscrito.empresa" ng-required="inscrito.profissional" ng-disabled="!inscrito.profissional || submetendoDados">
-							</md-input-container>
-						</md-content>
-						<md-content flex layout="row" layout-sm="column"></md-content>
-					</md-content>
-				</md-content>
-				
-				<hr size="1" color="#f5f5f5" noshade />
-				
-				<md-content class="md-padding" layout="row" layout-sm="column">
-					<md-input-container flex>
-						<p>Como você descobriu sobre o Arduino Day 2015?</p>
-						<md-select ng-model="inscrito.comoFicouSabendoDoEvento" ng-disabled="submetendoDados">
-							<md-option value="NENHUM">Selecione...</md-option>
-							<md-option value="SITE_EVENTO">Site do Evento</md-option>
-							<md-option value="FACEBOOK">Post no Facebook</md-option>
-							<md-option value="TWITTER">Twitter</md-option>
-							<md-option value="OUTDOOR">Outdoor</md-option>
-							<md-option value="AMIGO">Fiquei sabendo por Amigos</md-option>
-							<md-option value="MATERIA_INTERNET">Matéria em Portal de Notícias</md-option>
-							<md-option value="MATERIA_JORNAL">Matéria em Jornal Impresso</md-option>
-							<md-option value="MATERIA_TV">TV</md-option>
-							<md-option value="OUTROS">Outras</md-option>
-						</md-select>
-					</md-input-container>
-					
-					<md-input-container flex>
-						<md-checkbox ng-model="inscrito.jaConheceArduino" aria-label="Já conheço Arduino" ng-disabled="submetendoDados">Já <strong>conheço</strong> o Arduino</md-checkbox>
-					</md-input-container>
-					
-					<md-input-container flex>
-						<md-checkbox ng-model="inscrito.jaUsouArduino" aria-label="Já usei Arduino" ng-disabled="submetendoDados">Já <strong>usei</strong> o Arduino</md-checkbox>
-					</md-input-container>
-				</md-content>
-				
-				<md-content class="md-padding" layout="row" layout-sm="column">
-					<md-button type="submit" class="md-raised" ng-disabled="formInscricao.$invalid || submetendoDados" ng-click="formInscricao.$valid && submeter($event)">Efetuar Inscrição!</md-button>
-				</md-content>
-			</form>
-		</md-whiteframe>
-	</md-content>
-	--%>
 </body>
 </html>

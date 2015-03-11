@@ -90,7 +90,11 @@
 	
 	app.controller("PageController", ["$scope", "$http", function ($scope, $http) {
 		var inscrito = { uf: "PI", nivelGraduacao: "MEDIO_INCOMPLETO", comoFicouSabendoDoEvento: "NENHUM" };
+		var inscritoBusca = { email: "", cpf: "" };
 		$scope.inscrito = inscrito;
+		$scope.inscritoBusca = inscritoBusca;
+		$scope.acaoSubmit = "cadastrar";
+		$scope.submetendoDados = false;
 		
 		$scope.setJaConheco = function () {
 			if (!inscrito.jaConheceArduino) {
@@ -98,29 +102,35 @@
 			}
 		};
 		
-		$scope.submeter = function (evt) {
-			/*
-			if (evt) { evt.preventDefault(); }
-			$http({
-				method: "post",
-				url: document.forms[0].action,
-				data: buildFormData({ i: $scope.inscrito }),
-				cache: false,
-				headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" }
-			}).success(function (data) {
-				if (data.id) {
-					window.location.href = document.forms[0].getAttribute("data-urlbase") + "/" + data.id;
-				}
-				else {
-					for (var i = 0; i < data.errors.length; i++) {
-						$mdToast.show($mdToast.simple().content(data.errors[i]).position("top left").hideDelay(10000));
+		$scope.alterar = function (base) {
+			if (inscritoBusca.email && inscritoBusca.cpf) {
+				$scope.submetendoDados = true;
+				$http({
+					method: "post",
+					url: base + "/api/inscrito",
+					data: buildFormData(inscritoBusca) + "&ajax=1",
+					cache: false,
+					headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" }
+				}).success(function (data) {
+					if (data && data.id) {
+						inscrito = data;
+						document.getElementById("i_id").value = data.id;
+						$scope.inscrito = inscrito;
+						$scope.acaoSubmit = "alterar";
+						$scope.submetendoDados = false;
 					}
-				}
-			}).error(function (response) {
-				console.log(arguments);
-				$mdToast.show($mdToast.simple().content("Não foi possível efetuar sua inscrição neste momento. Por favor, tente novamente mais tarde!").position("top left").hideDelay(10000));
-			});
-			*/
+					else {
+						$scope.submetendoDados = false;
+						setTimeout(function () { alert("Não foi possível verificar suas informações neste momento. Aguarde alguns instantes e tente novamente.") }, 10);
+					}
+				}).error(function () {
+					$scope.submetendoDados = false;
+					setTimeout(function () { alert("Não foi possível verificar suas informações neste momento. Aguarde alguns instantes e tente novamente.") }, 10);
+				});
+			}
+			else {
+				alert("Preencha ambos campos antes de alterar seus dados");
+			}
 		};
 	}]);
 })(angular, window.jQuery ? jQuery : null, window);
