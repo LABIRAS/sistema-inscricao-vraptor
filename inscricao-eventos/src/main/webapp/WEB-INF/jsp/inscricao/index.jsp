@@ -67,7 +67,6 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<h1>Inscrições</h1>
-				<p>Your bones don't break, mine do. That's clear. Your cells react to bacteria and viruses differently than mine. You don't get sick, I do. That's also clear. But for some reason, you and I react the exact same way to water. We swallow it too fast, we choke. We get some in our lungs, we drown. However unreal it may seem, we are connected, you and I. We're on the same curve, just on opposite ends.</p>
 			</div>
 		</div>
 		
@@ -260,20 +259,30 @@
 							</div>
 							
 							<div class="form-group">
-								<label class="col-sm-3 control-label">Conhece o Arduino? *</label>
+								<label for="jaConheco" class="col-sm-3 control-label">Conhece o Arduino? *</label>
 								<div class="col-sm-9">
+									<select ng-model="jaConheco" id="jaConheco" ng-change="setJaConheco()" class="form-control">
+										<option value="0">Não conheço Arduino, vou para conhecer!</option>
+										<option value="1">Já conheço Arduino, vou para mexer com ele!</option>
+										<option value="2">Já conheço Arduino e mexo com Arduino! Quero me divertir ;D</option>
+									</select>
+									
+									<!--
 									<div class="checkbox">
-										<label><input type="checkbox" name="i.jaConheceArduino" ng-model="inscrito.jaConhecoArduino" id="jaConhecoArduino" ng-change="setJaConheco()"> <strong>Sim</strong>, já conheço o Arduino :)</label>
+										<label><input type="checkbox" name="i.jaConheceArduino" ng-model="inscrito.jaConhecoArduino" id="jaConhecoArduino" ng-change="setJaConheco()"> Já conheço o Arduino e estou indo para trabalhar com ele! :)</label>
 									</div>
 									<div class="checkbox">
 										<label><input type="checkbox" name="i.jaUsouArduino" ng-model="inscrito.jaUsouArduino" id="jaUsouArduino" ng-disabled="!inscrito.jaConhecoArduino"> Não só conheço, como já <strong>uso</strong> o Arduino ;D</label>
 									</div>
+									-->
 								</div>
 							</div>
 							
 							<div class="row">
 								<div class="col-sm-9 col-md-offset-3">
 									<input type="hidden" name="i.id" id="i_id" />
+									<input type="hidden" name="i.jaConheceArduino" id="i_jaConheceArduino" />
+									<input type="hidden" name="i.jaUsouArduino" id="i_jaUsouArduino" />
 									<button type="reset" class="btn btn-default">Cancelar</button>
 									<button type="submit" class="btn btn-primary">Vamos lá!</button>
 								</div>

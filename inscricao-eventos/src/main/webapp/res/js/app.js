@@ -96,9 +96,20 @@
 		$scope.acaoSubmit = "cadastrar";
 		$scope.submetendoDados = false;
 		
+		$scope.jaConheco = 0;
 		$scope.setJaConheco = function () {
-			if (!inscrito.jaConheceArduino) {
-				inscrito.jaUsouArduino = false;
+			document.getElementById("i_jaConheceArduino").value = "";
+			document.getElementById("i_jaUsouArduino").value = "";
+			
+			if ($scope.jaConheco == 1) {
+				inscrito.jaConhecoArduino = true;
+				document.getElementById("i_jaConheceArduino").value = "true";
+			}
+			if ($scope.jaConheco == 2) {
+				inscrito.jaConheceArduino = true;
+				inscrito.jaUsouArduino = true;
+				document.getElementById("i_jaConheceArduino").value = "true";
+				document.getElementById("i_jaUsouArduino").value = "true";
 			}
 		};
 		
@@ -115,6 +126,17 @@
 					if (data && data.id) {
 						inscrito = data;
 						document.getElementById("i_id").value = data.id;
+						$scope.jaConheco = 0;
+						if (inscrito.jaConheceArduino) {
+							$scope.jaConheco++;
+							document.getElementById("i_jaConheceArduino").value = "true";
+						}
+						else { document.getElementById("i_jaConheceArduino").value = ""; }
+						if (inscrito.jaUsouArduino) {
+							$scope.jaConheco++;
+							document.getElementById("i_jaUsouArduino").value = "true";
+						}
+						else { document.getElementById("i_jaUsouArduino").value = ""; }
 						$scope.inscrito = inscrito;
 						$scope.acaoSubmit = "alterar";
 						$scope.submetendoDados = false;
