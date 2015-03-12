@@ -2,7 +2,7 @@ body {
 	padding-top: 60px;
 }
 
-#profile {
+#profile, #login, #dashboard {
 	margin-top: 15px;
 }
 #profile-image-container {

@@ -30,12 +30,6 @@
 <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
 <link rel="stylesheet" href="<fmt:message key="app.urlBase" />/res/css/app.css">
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular.min.js"></script>
-<%--
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.css">
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-animate.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-aria.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.js"></script>
---%>
 <script src="<fmt:message key="app.urlBase" />/res/js/app.js"></script>
 </head>
 <body ng-controller="PageController">
@@ -55,9 +49,6 @@
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="http://labiras.cc/" target="_blank">LABIRAS</a></li>
-					<!--
-					<li><a href="https://wrapbootstrap.com/?ref=bsw" target="_blank">WrapBootstrap</a></li>
-					-->
 				</ul>
 			</div>
 		</div>
